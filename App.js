@@ -1,4 +1,5 @@
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import Navigation from "./src/navigation";
 
 export default function App() {

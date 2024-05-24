@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 
-const CustomButton = ({ onPress, text, type = "PRIMARY", bgColor, fgColor }) => {
+const CustomButton = ({ onPress, text, type = "PRIMARY", bgColor, fgColor, icon }) => {
     return (
         <Pressable
             onPress={onPress}
@@ -9,14 +9,17 @@ const CustomButton = ({ onPress, text, type = "PRIMARY", bgColor, fgColor }) => 
                 styles[`container_${type}`],
                 bgColor ? {backgroundColor : bgColor} : {}
             ]}>
-            <Text
-                style={[styles.text,
-                    styles[`text_${type}`],
-                fgColor ? {color: fgColor} : {},
-                ]}
-            >
-                {text}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {icon && <View style={{ marginRight: 10 }}>{icon}</View>}
+                <Text
+                    style={[styles.text,
+                        styles[`text_${type}`],
+                    fgColor ? {color: fgColor} : {},
+                    ]}
+                >
+                    {text}
+                </Text>
+            </View>
         </Pressable>
     );
 };
@@ -49,4 +52,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CustomButton
+export default CustomButton;
