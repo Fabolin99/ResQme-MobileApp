@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -15,6 +15,15 @@ import PetDetailScreen from "../screens/PetDetailScreen";
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+    const [favoritePets, setFavoritePets] = useState([]);
+
+    const handleToggleFavorite = (pet) => {
+        if (favoritePets.some(favoritePet => favoritePet.name === pet.name)) {
+            setFavoritePets(favoritePets.filter(favoritePet => favoritePet.name !== pet.name));
+        } else {
+            setFavoritePets([...favoritePets, pet]);
+        }
+    };
     return(
         <NavigationContainer>
             <Stack.Navigator screenOptions={{headerShown: false}}>
@@ -23,8 +32,12 @@ const Navigation = () => {
                 <Stack.Screen name="ConfirmEmail" component={ConfirmEmailScreen}/>
                 <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen}/>
                 <Stack.Screen name="NewPassword" component={NewPasswordScreen}/>
-                <Stack.Screen name="Home" component={HomeScreen}/>
-                <Stack.Screen name="Favorite" component={FavoriteScreen}/>
+                <Stack.Screen name="Home">
+                    {props => <HomeScreen {...props} favoritePets={favoritePets} onToggleFavorite={handleToggleFavorite} />}
+                </Stack.Screen>
+                <Stack.Screen name="Favorite">
+                    {props => <FavoriteScreen {...props} favoritePets={favoritePets} />}
+                </Stack.Screen>
                 <Stack.Screen name="Notification" component={NotificationScreen}/>
                 <Stack.Screen name="PetDetail" component={PetDetailScreen} />
             </Stack.Navigator>
