@@ -9,6 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 const SignInScreen = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
     const onSignInPressed = () => {
         // validate user
         navigation.navigate('Home');

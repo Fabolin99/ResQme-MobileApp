@@ -1,202 +1,281 @@
-import React, { useState } from "react";
-import { View, ScrollView, Text, Image, TouchableOpacity, TextInput, StyleSheet } from "react-native";
-import { Icon } from 'react-native-elements';
-import Modal from 'react-native-modal';
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, FlatList, Image } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import AppHeader from "../../components/AppHeader";
 import AppFooter from "../../components/AppFooter";
-import WelcomeLogo from "../../../assets/images/logo.png";
+import bensonImage from "../../../assets/images/benson.jpg";
+import pawPrint from "../../../assets/images/paw-print.png";
 
-const PetCard = ({ name, image, onPress, onToggleFavorite }) => {
-    const [isFavorite, setIsFavorite] = useState(false);
+const tips = [
+  "Regular check-ups with the vet can keep your pet healthy and happy.",
+  "Pets need a balanced diet to stay healthy. Make sure to research what kind of food is best for your pet's breed and age.",
+  "Regular exercise is important for your pet's physical and mental health. Make sure to provide plenty of playtime and walks.",
+  "Training your pet can strengthen your bond with them and also ensure they are well-behaved.",
+  "Socialization is important for pets. Introduce them to a variety of experiences so they can be comfortable in different situations.",
+  "Remember, adopting a pet is a long-term commitment. Make sure you're ready for the responsibility before bringing a pet home."
+];
 
-    const toggleFavorite = () => {
-        setIsFavorite(!isFavorite);
-        onToggleFavorite({ name, image });
-    };
-   return (
-           <TouchableOpacity style={styles.card} onPress={onPress}>
-               <Image source={image ? { uri: image } : WelcomeLogo} style={styles.image} />
-               <Text style={styles.name}>{name}</Text>
-               <Icon
-                   name={isFavorite ? 'heart' : 'heart-o'}
-                   type='font-awesome'
-                   color={isFavorite ? 'red' : 'gray'}
-                   onPress={toggleFavorite}
-                   containerStyle={styles.icon}
-               />
-           </TouchableOpacity>
-       );
-   };
 
-const HomeScreen = ({ navigation, favoritePets, onToggleFavorite }) => {
-    const pets = [
+const getRandomTip = () => {
+  const index = Math.floor(Math.random() * tips.length);
+  return tips[index];
+};
+
+const upcomingHolidays = [
+  {
+    date: '2024-07-04',
+    name: 'Independence Day',
+  },
+  {
+    date: '2024-09-02',
+    name: 'Labor Day',
+  },
+  // Add more events/holidays as needed...
+];
+
+const getClosestHoliday = () => {
+  const today = new Date();
+  const upcomingDates = upcomingHolidays.map((event) => new Date(event.date));
+  const closestDate = new Date(Math.min(...upcomingDates.filter(date => date > today).map(date => date.getTime())));
+
+  const closestEvent = upcomingHolidays.find((event) => {
+    const eventDate = new Date(event.date);
+    return eventDate.getTime() === closestDate.getTime();
+  });
+
+  return closestEvent ? `${closestEvent.name} - ${closestEvent.date}` : '';
+};
+
+
+const news = [
+  {
+    title: 'New Program Launch!',
+    date: '2024-03-21',
+    content: 'We are excited to announce the launch of our new program aimed at empowering young girls in STEM fields.',
+  },
+  // Add more news as needed...
+];
+
+const getLatestNews = () => {
+  const latestNews = news.reduce((acc, curr) =>
+    new Date(curr.date) > new Date(acc.date) ? curr : acc
+  );
+  return latestNews;
+};
+
+const HomeScreen = () => {
+    const ourStory = "Meet Benson, the cat that changed my life. Benson was rescued from an animal shelter after being there for many months. Benson saw how many cats were adopted and had a happy life. When I saw Benson the first time, I saw a cat that wanted a second opportunity but life hasn't been fair. That moment is when I adopted her and my life changed.\n\nBenson quickly became a part of my life, turning her world upside down. The once quiet apartment was now filled with tiny meows and the patter of little paws. Seeing Benson's transformation from a scared kitten to a playful, happy cat, I fell in love with the idea of adoption. My hope is to give more animals like Benson a second chance at life.";
+    const [isFlipped, setIsFlipped] = useState(false);
+    const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
+
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+          setCurrentScreenIndex((prevIndex) => (prevIndex + 1) % screens.length);
+        }, 6000); // Change screen every 6 seconds
+
+        return () => clearInterval(timer);
+      }, []);
+
+      const handleNext = () => {
+        setCurrentScreenIndex((prevIndex) => (prevIndex + 1) % screens.length);
+      };
+
+      const handlePrev = () => {
+        setCurrentScreenIndex((prevIndex) =>
+          prevIndex === 0 ? screens.length - 1 : prevIndex - 1
+        );
+      };
+
+      const screens = [
         {
-            name: 'Pet 1',
-            image: 'https://via.placeholder.com/150',
-            description: 'Pet 1 is a friendly and playful dog.',
-            age: 2,
-            breed: 'Labrador',
-            size: 'Large',
-            gender: 'Male',
-            location: 'New York, NY'
+          title: 'Tip of the Day:',
+          content: getRandomTip(),
         },
         {
-            name: 'Pet 2',
-            image: null, // No image for this pet
-            description: 'Pet 2 is a loving and gentle cat.',
-            age: 3,
-            breed: 'Persian',
-            size: 'Medium',
-            gender: 'Female',
-            location: 'Los Angeles, CA'
+          title: 'Upcoming Holiday:',
+          content: getClosestHoliday(),
         },
         {
-            name: 'Pet 3',
-            image: 'https://via.placeholder.com/150',
-            description: 'Pet 3 is an energetic and happy puppy.',
-            age: 1,
-            breed: 'Beagle',
-            size: 'Small',
-            gender: 'Male',
-            location: 'Chicago, IL'
+          title: 'Latest News:',
+          content: `${getLatestNews().title} - ${getLatestNews().date}`,
         },
-    ];
+      ];
 
-    const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
-    const [filter, setFilter] = useState("All");
-    const [sort, setSort] = useState(null);
-
-    const toggleFilterModal = () => {
-        setIsFilterModalVisible(!isFilterModalVisible);
+    const flipCard = () => {
+        setIsFlipped(!isFlipped);
     };
 
-    const applyFilter = (selectedFilter, selectedSort) => {
-        setFilter(selectedFilter);
-        setSort(selectedSort);
-        toggleFilterModal();
-    };
+    const navigation = useNavigation();
+    const [greeting, setGreeting] = useState('');
 
-    const getSortedPets = () => {
-        let sortedPets = [...pets];
-        if (sort === "Age") {
-            sortedPets.sort((a, b) => a.age - b.age);
-        } else if (sort === "Name") {
-            sortedPets.sort((a, b) => a.name.localeCompare(b.name));
+
+
+    useEffect(() => {
+        const date = new Date();
+        const hour = date.getHours();
+
+        if (hour < 12) {
+            setGreeting('Good Morning');
+        } else if (hour < 18) {
+            setGreeting('Good Afternoon');
+        } else {
+            setGreeting('Good Evening');
         }
-        return sortedPets;
+    }, []);
+
+    const onPetPressed = () => {
+        navigation.navigate('Pet');
     };
 
     return (
-            <View style={{ flex: 1 }}>
-                <AppHeader />
-                <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
-                    <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 5 }}>
-                        Ready to find your next friend?
-                    </Text>
-                    <TextInput placeholder="Search for pets" style={{ height: 40, borderColor: 'gray', borderWidth: 1, margin: 20 }}/>
-                    <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
-                        <Icon name='filter' type='font-awesome' color='#000' />
+        <View style={styles.container}>
+            <AppHeader />
+            <ScrollView contentContainerStyle={styles.content}>
+                <Text style={styles.text}>{greeting}, User</Text>
+
+                {/* carrousel */}
+                <View style={{ backgroundColor: '#8da9c4', padding: 10, borderRadius: 10, margin: 10, width: 370, height: 150 }}>
+                  <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
+                    {screens[currentScreenIndex].title}
+                  </Text>
+                  <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
+                    {screens[currentScreenIndex].content}
+                  </Text>
+                  {screens[currentScreenIndex].links && (
+                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                      {screens[currentScreenIndex].links.map((link) => (
+                        <TouchableOpacity
+                          key={link.name}
+                          onPress={() => void openApp(link.url, 'link')}
+                          style={{ width: 40, height: 40, marginHorizontal: 10 }}
+                        >
+                          <Image source={link.icon} style={{ width: 40, height: 40 }} />
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </View>
+                {/* carrousel */}
+
+                {/* pet section */}
+                <View style={styles.petSection}>
+                    <Text style={styles.petIntro}>Explore the Pet Screen to learn more about our adorable pets waiting for their forever home.</Text>
+                    <Image source={pawPrint} style={styles.pawImage} />
+                    <TouchableOpacity style={styles.petButton} onPress={onPetPressed}>
+                        <Text style={styles.petButtonText}>Go to Pet Screen</Text>
                     </TouchableOpacity>
-                    <View style={styles.container}>
-                        {getSortedPets()
-                            .filter(pet => filter === "All" || (filter === "Dogs" && pet.breed.toLowerCase() === "labrador") || (filter === "Cats" && pet.breed.toLowerCase() === "persian"))
-                            .map((pet, index) => (
-                                <TouchableOpacity key={index}  style={styles.card} onPress={() => navigation.navigate('PetDetail', {
-                                    name: pet.name,
-                                    image: pet.image,
-                                    description: pet.description,
-                                    age: pet.age,
-                                    breed: pet.breed,
-                                    size: pet.size,
-                                    gender: pet.gender,
-                                    location: pet.location,
-                                })}>
-                                    <Image source={pet.image ? { uri: pet.image } : WelcomeLogo} style={styles.image} />
-                                    <Text style={styles.name}>{pet.name}</Text>
-                                    <Icon
-                                        name={favoritePets.some(favoritePet => favoritePet.name === pet.name) ? 'heart' : 'heart-o'}
-                                        type='font-awesome'
-                                        color={favoritePets.some(favoritePet => favoritePet.name === pet.name) ? 'red' : 'gray'}
-                                        onPress={() => onToggleFavorite(pet)}
-                                        containerStyle={styles.icon}
-                                    />
-                                </TouchableOpacity>
-                            ))}
-                    </View>
-                </ScrollView>
-                <AppFooter />
+                </View>
+                {/* pet section */}
 
-                <Modal isVisible={isFilterModalVisible} onBackdropPress={toggleFilterModal}>
-                    <View style={styles.modal}>
-                        <TouchableOpacity onPress={() => applyFilter("All", null)} style={styles.modalOption}>
-                            <Text>All</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => applyFilter("Dogs", null)} style={styles.modalOption}>
-                            <Text>Dogs</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => applyFilter("Cats", null)} style={styles.modalOption}>
-                            <Text>Cats</Text>
-                        </TouchableOpacity>
-                        <Text style={{ marginVertical: 10 }}>Sort by:</Text>
-                        <TouchableOpacity onPress={() => applyFilter(filter, "Name")} style={styles.modalOption}>
-                            <Text>Name</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => applyFilter(filter, "Age")} style={styles.modalOption}>
-                            <Text>Age</Text>
-                        </TouchableOpacity>
-                    </View>
-                </Modal>
-            </View>
-        );
-    };
+                {/* story section */}
+                <View style={styles.storySection}>
+                    <Text style={styles.storyTitle}>Our Story</Text>
+                    <Text style={styles.storyContent}>{ourStory}</Text>
+                    <TouchableOpacity onPress={flipCard} style={styles.flipCard}>
+                        {isFlipped ? (
+                            <View style={styles.flipCardInfo}>
+                                <Text><Text style={styles.boldText}>Name:</Text> Benson</Text>
+                                <Text><Text style={styles.boldText}>Rescued in:</Text> Rexburg, ID</Text>
+                                <Text><Text style={styles.boldText}>Age:</Text> 3 years old</Text>
+                                <Text><Text style={styles.boldText}>Favorite hobby:</Text> Sleep</Text>
+                            </View>
+                        ) : (
+                            <Image source={bensonImage} style={styles.storyImage} />
+                        )}
+                    </TouchableOpacity>
+                </View>
+                {/* story section */}
 
+            </ScrollView>
+            <AppFooter />
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
     },
-    card: {
-        width: '45%',
-        margin: 5,
-        padding: 10,
-        backgroundColor: '#fff',
-        borderRadius: 10,
+    content: {
+        flexGrow: 1,
+        justifyContent: 'center',
         alignItems: 'center',
+        padding: 16,
     },
-    image: {
-        width: '100%',
-        height: 150,
-        resizeMode: 'cover',
-    },
-    name: {
-        marginTop: 10,
-        fontSize: 16,
+     boldText: {
         fontWeight: 'bold',
     },
-    icon: {
-        marginTop: 10,
+    text: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
     },
-    filterIcon: {
-        alignSelf: 'flex-end',
-        marginRight: 20,
-        marginBottom: -30,
-        zIndex: 1,
-        backgroundColor: '#fff',
+    carouselImage: {
+        width: 330,
+        height: 300,
+        margin: 10,
+    },
+    petSection: {
+        width: '100%',
+        backgroundColor: '#8da9c4',
+        borderRadius: 5,
         padding: 10,
-        borderRadius: 50,
-        elevation: 5,
+        marginTop: 30,
+        marginBottom: 20,
     },
-    modal: {
-        backgroundColor: '#fff',
-        padding: 20,
-        borderRadius: 10,
+    petIntro: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    pawImage: {
+        width: 100,
+        height: 100,
+        resizeMode: 'contain',
         alignSelf: 'center',
+        marginBottom: 10,
     },
-    modalOption: {
-        paddingVertical: 10,
+    petButton: {
+        backgroundColor: '#1E90FF',
+        padding: 10,
+        borderRadius: 5,
+    },
+    petButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        textAlign: 'center',
+    },
+    storySection: {
+        marginTop: 20,
+        padding: 10,
+        backgroundColor: '#8da9c4',
+        borderRadius: 5,
+        marginBottom: 30,
+    },
+    storyTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    storyContent: {
+        marginTop: 10,
+        fontSize: 16,
+    },
+    flipCard: {
+        width: 200,
+        height: 200,
+        borderRadius: 5,
+        marginTop: 18,
+    },
+    flipCardInfo: {
+        padding: 10,
+        marginLeft: 120,
+    },
+    storyImage: {
+        width: 200,
+        height: 200,
+        resizeMode: 'contain',
+        marginLeft: 75,
     },
 });
 

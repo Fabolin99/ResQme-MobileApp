@@ -11,6 +11,8 @@ import HomeScreen from "../screens/HomeScreen";
 import FavoriteScreen from "../screens/FavoriteScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import PetDetailScreen from "../screens/PetDetailScreen";
+import SettingScreen from "../screens/SettingScreen";
+import PetScreen from "../screens/PetScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,14 +34,17 @@ const Navigation = () => {
                 <Stack.Screen name="ConfirmEmail" component={ConfirmEmailScreen}/>
                 <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen}/>
                 <Stack.Screen name="NewPassword" component={NewPasswordScreen}/>
-                <Stack.Screen name="Home">
-                    {props => <HomeScreen {...props} favoritePets={favoritePets} onToggleFavorite={handleToggleFavorite} />}
-                </Stack.Screen>
+                <Stack.Screen name="Home" component={HomeScreen}/>
                 <Stack.Screen name="Favorite">
                     {props => <FavoriteScreen {...props} favoritePets={favoritePets} />}
                 </Stack.Screen>
                 <Stack.Screen name="Notification" component={NotificationScreen}/>
                 <Stack.Screen name="PetDetail" component={PetDetailScreen} />
+                <Stack.Screen name="Setting" component={SettingScreen} />
+                <Stack.Screen name="Pet">
+                    {props => <PetScreen {...props} favoritePets={favoritePets} onToggleFavorite={handleToggleFavorite} />}
+                </Stack.Screen>
+
             </Stack.Navigator>
         </NavigationContainer>
     );

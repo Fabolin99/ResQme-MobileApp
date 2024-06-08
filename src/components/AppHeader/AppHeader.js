@@ -10,7 +10,7 @@ const AppHeader = () => {
     const navigation = useNavigation();
 
     const onBarsPressed = () => {
-       console.warn('onBarsPressed');
+       navigation.navigate('Setting');
 
     };
     const onHomePressed = () => {
@@ -31,7 +31,7 @@ const AppHeader = () => {
                     placement="left"
                     leftComponent={<Image source={logo} style={{ width: 145, height: 55, marginBottom: -12 }} />}
                     rightComponent={
-                        <Icon name="bars" type="font-awesome" color="#fff" onPress={onBarsPressed} />
+                        <Icon name="search" type="font-awesome" color="#fff" style={{ marginRight: 10 }} />
                     }
                     backgroundColor='skyblue'
                     containerStyle={{ marginBottom: -13 }}
@@ -43,7 +43,7 @@ const AppHeader = () => {
                         <Icon name="home" type="font-awesome" color="#fff" iconStyle={{ marginRight: 90 }} onPress={onHomePressed} />
                         <Icon name="heart" type="font-awesome" color="#fff" iconStyle={{ marginRight: 90 }} onPress={onFavoritePressed} />
                         <Icon name="bell" type="font-awesome" color="#fff" iconStyle={{ marginRight: 90 }} onPress={onNotificationPressed}/>
-                        <Icon name="search" type="font-awesome" color="#fff" style={{ marginRight: 90 }} />
+                        <Icon name="bars" type="font-awesome" color="#fff" onPress={onBarsPressed} />
                     </View>
                 }
                 backgroundColor='skyblue'
