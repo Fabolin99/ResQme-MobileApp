@@ -5,6 +5,7 @@ import AppHeader from "../../components/AppHeader";
 import AppFooter from "../../components/AppFooter";
 import bensonImage from "../../../assets/images/benson.jpg";
 import pawPrint from "../../../assets/images/paw-print.png";
+import { Ionicons } from '@expo/vector-icons';
 
 const tips = [
   "Regular check-ups with the vet can keep your pet healthy and happy.",
@@ -128,6 +129,10 @@ const HomeScreen = () => {
         navigation.navigate('Pet');
     };
 
+    const onPostPetPressed = () => {
+        navigation.navigate('Post');
+      };
+
     return (
         <View style={styles.container}>
             <AppHeader />
@@ -167,6 +172,16 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                 </View>
                 {/* pet section */}
+
+                {/* post pet section */}
+                <View style={styles.postPetSection}>
+                  <Text style={styles.postPetIntro}>Have a pet that needs a new home? Post them here so they can be discovered by potential adopters.</Text>
+                  <TouchableOpacity style={styles.postPetButton} onPress={onPostPetPressed}>
+                    <Ionicons name="add-circle-outline" size={24} color="white" />
+                    <Text style={styles.postPetButtonText}>Post a Pet</Text>
+                  </TouchableOpacity>
+                </View>
+                {/* post pet section */}
 
                 {/* story section */}
                 <View style={styles.storySection}>
@@ -246,6 +261,30 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
     },
+    postPetSection: {
+        width: '100%',
+        backgroundColor: '#8da9c4',
+        borderRadius: 5,
+        padding: 10,
+        marginTop: 30,
+        marginBottom: 20,
+      },
+      postPetIntro: {
+        fontSize: 16,
+        marginBottom: 10,
+      },
+      postPetButton: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#c82333',
+        padding: 10,
+        borderRadius: 5,
+      },
+      postPetButtonText: {
+        color: 'white',
+        marginLeft: 10,
+      },
     storySection: {
         marginTop: 20,
         padding: 10,

@@ -13,6 +13,7 @@ import NotificationScreen from "../screens/NotificationScreen";
 import PetDetailScreen from "../screens/PetDetailScreen";
 import SettingScreen from "../screens/SettingScreen";
 import PetScreen from "../screens/PetScreen";
+import PostPetScreen from "../screens/PostPetScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +42,7 @@ const Navigation = () => {
                 <Stack.Screen name="Notification" component={NotificationScreen}/>
                 <Stack.Screen name="PetDetail" component={PetDetailScreen} />
                 <Stack.Screen name="Setting" component={SettingScreen} />
+                <Stack.Screen name="Post" component={PostPetScreen} />
                 <Stack.Screen name="Pet">
                     {props => <PetScreen {...props} favoritePets={favoritePets} onToggleFavorite={handleToggleFavorite} />}
                 </Stack.Screen>
