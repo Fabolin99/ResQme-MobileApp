@@ -4,6 +4,7 @@ import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
 import SocialSignInButtons from "../../components/SocialSignInButtons";
 import {useNavigation} from "@react-navigation/native";
+import supabase from '../../components/supabaseClient';
 
 const SignUpScreen = () => {
     const [username, setUsername] = useState('');
@@ -12,9 +13,25 @@ const SignUpScreen = () => {
     const [passwordRepeat, setPasswordRepeat] = useState('');
     const navigation = useNavigation();
 
-    const onRegisterPressed = () => {
-        navigation.navigate('ConfirmEmail');
+    const onRegisterPressed = async () => {
+        if (password !== passwordRepeat) {
+            alert("Passwords do not match");
+            return;
+    }
+
+    const { user, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+        });
+
+        if (error) {
+            alert(error.message);
+        } else {
+            alert("Registration successful, please check your email for verification instructions");
+            navigation.navigate('ConfirmEmail');
+        }
     };
+
     const onSignInPress = () => {
         navigation.navigate('SignIn');
     };

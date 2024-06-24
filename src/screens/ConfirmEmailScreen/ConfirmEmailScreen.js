@@ -4,20 +4,35 @@ import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
 import SocialSignInButtons from "../../components/SocialSignInButtons";
 import { useNavigation } from "@react-navigation/native";
+import supabase from '../../components/supabaseClient';
 
 const ConfirmEmailScreen = () => {
     const [code, setCode] = useState('');
     const navigation = useNavigation();
 
-    const onConfirmPressed = () => {
-        navigation.navigate('Home');
+    const onConfirmPressed = async () => {
+        const { error } = await supabase.auth.verifyUser('email', code);
+
+        if (error) {
+            alert(error.message);
+        } else {
+            alert("Email verification successful");
+            navigation.navigate('Home');
+        }
     };
+
     const onSignInPress = () => {
         navigation.navigate('SignIn');
     };
-    const onResentPress = () => {
-        console.warn('onResentPress');
+    const onResentPress = async () => {
+        const { error } = await supabase.auth.resendConfirmation(email);
+        if (error) {
+            alert(error.message);
+        } else {
+            alert("Confirmation code has been resent. Please check your email");
+        }
     };
+
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
