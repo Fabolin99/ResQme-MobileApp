@@ -5,6 +5,8 @@ import { Picker } from '@react-native-picker/picker';
 import AppHeader from "../../components/AppHeader";
 import AppFooter from "../../components/AppFooter";
 import supabase from '../../components/supabaseClient';
+import * as FileSystem from 'expo-file-system';
+import { decode } from 'base64-arraybuffer'
 
 const PostPetScreen = () => {
   const [picture, setPicture] = useState(null);
@@ -12,43 +14,58 @@ const PostPetScreen = () => {
   const [breed, setBreed] = useState('');
   const [age, setAge] = useState('');
   const [size, setSize] = useState('');
-  const [gender, setGender] = useState('male'); // default value set to 'male'
+  const [gender, setGender] = useState('male');
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    if (!result.cancelled) {
-      const uri = result.uri; // updated to use result.uri directly
-      setPicture(uri);
+    if (!result.canceled) {
+      setPicture(result.assets[0].uri);
     }
   };
 
-  const uploadImage = async (blob) => {
+  const uploadImage = async (uri) => {
     try {
-      const { data, error } = await supabase.storage.from('pets').upload(`images/${Date.now()}.jpg`, blob);
+      const fileName = `public/images/${Date.now()}.jpg`;
+      const fileInfo = await FileSystem.getInfoAsync(uri);
+      if (!fileInfo.exists === 'file') {
+        throw new Error('File does not exist');
+      }
+      const fileData = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const base64Data = `data:image/jpeg;base64,${fileData}`;
+
+      const { data, error } = await supabase.storage
+        .from('pets')
+        .upload(fileName, base64Data, {
+          contentType: 'image/jpeg',
+        });
 
       if (error) {
         console.log('Error uploading image: ', error.message);
         Alert.alert('Error uploading image', error.message);
-        return;
+        return null;
       }
 
       const pictureUrl = data.path;
       console.log('Image uploaded successfully:', pictureUrl);
       return pictureUrl;
     } catch (error) {
-      console.log('Network request failed: ', error.message);
-      Alert.alert('Network request failed', error.message);
+      console.log('Error storing image: ', error.message);
+      Alert.alert('Error storing image', error.message);
+      return null;
     }
   };
+
 
   const handleSubmit = async () => {
     if (isNaN(age)) {
@@ -64,27 +81,13 @@ const PostPetScreen = () => {
     setLoading(true);
 
     try {
-      // Fetch image and convert to blob
-      const file = await fetch(picture);
-      const blob = await file.blob();
-      console.log('Image fetched and converted to blob successfully.');
-
-      // Log blob details
-      console.log('Blob:', blob);
-      console.log('Blob size:', blob.size);
-      console.log('Blob type:', blob.type);
-
-      // Upload to Supabase storage
-      const pictureUrl = await uploadImage(blob);
+      const pictureUrl = await uploadImage(picture);
 
       if (!pictureUrl) {
         setLoading(false);
         return;
       }
 
-      console.log('Image uploaded successfully:', pictureUrl);
-
-      // Insert pet data to Supabase table
       const petData = {
         picture: pictureUrl,
         name: name,
@@ -93,7 +96,7 @@ const PostPetScreen = () => {
         size: size,
         gender: gender,
         location: location,
-        description: description
+        description: description,
       };
 
       const { data: insertData, error: insertError } = await supabase
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: 100, // Add padding to ensure content is not covered by button
+    paddingBottom: 100,
   },
   title: {
     fontSize: 24,

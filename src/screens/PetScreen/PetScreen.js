@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, Text, Image, TouchableOpacity, TextInput, StyleSheet } from "react-native";
 import { Icon } from 'react-native-elements';
 import Modal from 'react-native-modal';
 import AppHeader from "../../components/AppHeader";
 import AppFooter from "../../components/AppFooter";
 import WelcomeLogo from "../../../assets/images/logo.png";
+import supabase from '../../components/supabaseClient';
 
 const PetCard = ({ name, image, onPress, onToggleFavorite }) => {
     const [isFavorite, setIsFavorite] = useState(false);
@@ -29,38 +30,23 @@ const PetCard = ({ name, image, onPress, onToggleFavorite }) => {
    };
 
 const PetScreen = ({ navigation, favoritePets, onToggleFavorite }) => {
-    const pets = [
-        {
-            name: 'Pet 1',
-            image: 'https://via.placeholder.com/150',
-            description: 'Pet 1 is a friendly and playful dog.',
-            age: 2,
-            breed: 'Labrador',
-            size: 'Large',
-            gender: 'Male',
-            location: 'New York, NY'
-        },
-        {
-            name: 'Pet 2',
-            image: null, // No image for this pet
-            description: 'Pet 2 is a loving and gentle cat.',
-            age: 3,
-            breed: 'Persian',
-            size: 'Medium',
-            gender: 'Female',
-            location: 'Los Angeles, CA'
-        },
-        {
-            name: 'Pet 3',
-            image: 'https://via.placeholder.com/150',
-            description: 'Pet 3 is an energetic and happy puppy.',
-            age: 1,
-            breed: 'Beagle',
-            size: 'Small',
-            gender: 'Male',
-            location: 'Chicago, IL'
-        },
-    ];
+    const [pets, setPets] = useState([]);
+
+    useEffect(() => {
+        fetchPets();
+    }, []);
+
+    const fetchPets = async () => {
+        const { data, error } = await supabase
+            .from('pets')
+            .select('*');
+
+        if (error) {
+            console.log('Error fetching pets: ', error.message);
+        } else {
+            setPets(data);
+        }
+    };
 
     const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
     const [filter, setFilter] = useState("All");
