@@ -110,8 +110,6 @@ const HomeScreen = () => {
     const navigation = useNavigation();
     const [greeting, setGreeting] = useState('');
 
-
-
     useEffect(() => {
         const date = new Date();
         const hour = date.getHours();

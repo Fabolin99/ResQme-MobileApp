@@ -19,7 +19,7 @@ const FavoriteScreen = ({ favoritePets, navigation }) => {
                                 style={styles.card}
                                 onPress={() => navigation.navigate('PetDetail', {
                                     name: pet.name,
-                                    image: pet.image,
+                                    image: pet.picture,
                                     description: pet.description,
                                     age: pet.age,
                                     breed: pet.breed,
@@ -28,7 +28,7 @@ const FavoriteScreen = ({ favoritePets, navigation }) => {
                                     location: pet.location,
                                 })}
                             >
-                                <Image source={pet.image ? { uri: pet.image } : WelcomeLogo} style={styles.image} />
+                                <Image source={pet.picture ? { uri: pet.picture } : WelcomeLogo} style={styles.image} />
                                 <Text style={styles.name}>{pet.name}</Text>
                                 <Icon
                                     name='heart'

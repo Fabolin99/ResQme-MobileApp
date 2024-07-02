@@ -1,10 +1,44 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import AppHeader from "../../components/AppHeader";
 import AppFooter from "../../components/AppFooter";
+import supabase from '../../components/supabaseClient';
 
 const PetDetailScreen = ({ route }) => {
     const { name, image, description, age, breed, size, gender, location } = route.params;
+    const [isFormVisible, setFormVisible] = useState(false);
+    const [formData, setFormData] = useState({
+        adopterName: '',
+        contact: '',
+        message: '',
+    });
+
+    const handleAdopt = async () => {
+        if (formData.adopterName === '' || formData.contact === '' || formData.message === '') {
+            Alert.alert('Error', 'Please fill out all fields');
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('adoption_requests')
+            .insert([
+                {
+                    pet_name: name,
+                    adopter_name: formData.adopterName,
+                    contact: formData.contact,
+                    message: formData.message,
+                    status: 'pending'
+                }
+            ]);
+
+        if (error) {
+            Alert.alert('Error', error.message);
+        } else {
+            Alert.alert('Success', 'Adoption request sent!');
+            setFormVisible(false);
+            setFormData({ adopterName: '', contact: '', message: '' });
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -18,9 +52,36 @@ const PetDetailScreen = ({ route }) => {
                 <Text style={styles.gender}>Gender: {gender}</Text>
                 <Text style={styles.location}>Location: {location}</Text>
                 <Text style={styles.description}>{description}</Text>
-                <TouchableOpacity style={styles.adoptButton} onPress={() => alert('Adoption request sent!')}>
-                    <Text style={styles.adoptButtonText}>Adopt Me</Text>
-                </TouchableOpacity>
+
+                {!isFormVisible ? (
+                    <TouchableOpacity style={styles.adoptButton} onPress={() => setFormVisible(true)}>
+                        <Text style={styles.adoptButtonText}>Adopt Me</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <View style={styles.form}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Your Name"
+                            value={formData.adopterName}
+                            onChangeText={(text) => setFormData({ ...formData, adopterName: text })}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Contact Information"
+                            value={formData.contact}
+                            onChangeText={(text) => setFormData({ ...formData, contact: text })}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Message"
+                            value={formData.message}
+                            onChangeText={(text) => setFormData({ ...formData, message: text })}
+                        />
+                        <TouchableOpacity style={styles.submitButton} onPress={handleAdopt}>
+                            <Text style={styles.submitButtonText}>Submit Request</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </ScrollView>
             <AppFooter />
         </View>
@@ -86,6 +147,28 @@ const styles = StyleSheet.create({
         marginBottom: 45,
     },
     adoptButtonText: {
+        color: '#fff',
+        fontSize: 18,
+    },
+    form: {
+        width: '100%',
+        alignItems: 'center',
+    },
+    input: {
+        width: '100%',
+        padding: 10,
+        marginVertical: 8,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+    },
+    submitButton: {
+        backgroundColor: '#ff6347',
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 45,
+    },
+    submitButtonText: {
         color: '#fff',
         fontSize: 18,
     },

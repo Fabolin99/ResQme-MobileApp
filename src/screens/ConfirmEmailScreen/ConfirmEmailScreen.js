@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import CustomInput from "../../components/CustomInput";
 import CustomButton from "../../components/CustomButton";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import supabase from '../../components/supabaseClient';
 
 const ConfirmEmailScreen = () => {
-    const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const navigation = useNavigation();
+    const route = useRoute();
+    const { email } = route.params;
 
     const onConfirmPressed = async () => {
         const { data, error } = await supabase.auth.verifyOtp({
@@ -45,7 +46,6 @@ const ConfirmEmailScreen = () => {
             <View style={styles.root}>
                 <Text style={styles.title}>Confirm your email</Text>
 
-                <CustomInput placeholder="Enter your email" value={email} setValue={setEmail} />
                 <CustomInput placeholder="Enter your confirmation code" value={code} setValue={setCode} />
 
                 <CustomButton text="Confirm" onPress={onConfirmPressed} />
