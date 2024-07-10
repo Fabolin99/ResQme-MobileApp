@@ -17,6 +17,10 @@ import PostPetScreen from "../screens/PostPetScreen";
 import TermsOfServiceScreen from "../screens/TermsOfServiceScreen";
 import PrivacyTermsScreen from "../screens/PrivacyTermsScreen";
 import SupportScreen from "../screens/SupportScreen";
+import MyPetsScreen from "../screens/MyPetsScreen";
+import EditPetScreen from "../screens/EditPetScreen";
+import AdoptionScreen from "../screens/AdoptionScreen";
+import AdoptionInfoScreen from "../screens/AdoptionInfoScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -49,10 +53,13 @@ const Navigation = () => {
                 <Stack.Screen name="Terms" component={TermsOfServiceScreen} />
                 <Stack.Screen name="Privacy" component={PrivacyTermsScreen} />
                 <Stack.Screen name="Support" component={SupportScreen} />
+                <Stack.Screen name="MyPets" component={MyPetsScreen} />
+                <Stack.Screen name="EditPet" component={EditPetScreen} />
+                <Stack.Screen name="Adoption" component={AdoptionScreen} />
+                <Stack.Screen name="AdoptionInfo" component={AdoptionInfoScreen} />
                 <Stack.Screen name="Pet">
                     {props => <PetScreen {...props} favoritePets={favoritePets} onToggleFavorite={handleToggleFavorite} />}
                 </Stack.Screen>
-
             </Stack.Navigator>
         </NavigationContainer>
     );

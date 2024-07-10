@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, Text, StyleSheet, Switch, TouchableOpacity, Alert, Modal, Pressable } from "react-native";
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Alert, Modal, Pressable } from "react-native";
 import AppHeader from "../../components/AppHeader";
 import AppFooter from "../../components/AppFooter";
 import { useNavigation } from "@react-navigation/native";
@@ -33,6 +33,10 @@ const SettingScreen = () => {
         setModalVisible(true);
     };
 
+    const onMyPetsPressed = () => {
+        navigation.navigate('MyPets');
+    };
+
     const handleDeleteAccount = async () => {
         const user = supabase.auth.user;
 
@@ -52,16 +56,6 @@ const SettingScreen = () => {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <Text style={styles.heading}>Settings</Text>
 
-                <View style={styles.settingItem}>
-                    <Text style={styles.settingText}>Notifications</Text>
-                    <Switch />
-                </View>
-
-                <View style={styles.settingItem}>
-                    <Text style={styles.settingText}>Dark Mode</Text>
-                    <Switch />
-                </View>
-
                 <TouchableOpacity style={styles.settingItem} onPress={onChangePasswordPress}>
                     <Text style={styles.settingText}>Change Password</Text>
                 </TouchableOpacity>
@@ -72,6 +66,10 @@ const SettingScreen = () => {
 
                 <TouchableOpacity style={styles.settingItem} onPress={onTermsOfUsePressed}>
                     <Text style={styles.settingText}>Terms of Service</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.settingItem} onPress={onMyPetsPressed}>
+                    <Text style={styles.settingText}>My Pets</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.settingItem} onPress={onSupportPressed}>

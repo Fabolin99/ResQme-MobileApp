@@ -32,6 +32,7 @@ const PetCard = ({ name, image, onPress, onToggleFavorite }) => {
 
 const PetScreen = ({ navigation, favoritePets, onToggleFavorite }) => {
     const [pets, setPets] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         fetchPets();
@@ -78,68 +79,74 @@ const PetScreen = ({ navigation, favoritePets, onToggleFavorite }) => {
     };
 
     return (
-        <View style={{ flex: 1 }}>
-            <AppHeader />
-            <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
-                <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 5 }}>
-                    Ready to find your next friend?
-                </Text>
-                <TextInput placeholder="Search for pets" style={{ height: 40, borderColor: 'gray', borderWidth: 1, margin: 20 }} />
-                <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
-                    <Icon name='filter' type='font-awesome' color='#000' />
-                </TouchableOpacity>
-                <View style={styles.container}>
-                    {getSortedPets()
-                        .filter(pet => filter === "All" || (filter === "Dogs" && pet.type === "dog") || (filter === "Cats" && pet.type === "cat"))
-                        .map((pet, index) => (
-                            <TouchableOpacity key={index} style={styles.card} onPress={() => navigation.navigate('PetDetail', {
-                                name: pet.name,
-                                image: pet.picture,
-                                description: pet.description,
-                                age: pet.age,
-                                breed: pet.breed,
-                                size: pet.size,
-                                gender: pet.gender,
-                                location: pet.location,
-                            })}>
-                                <Image source={pet.picture ? { uri: pet.picture } : WelcomeLogo} style={styles.image} />
-                                <Text style={styles.name}>{pet.name}</Text>
-                                <Icon
-                                    name={favoritePets.some(favoritePet => favoritePet.name === pet.name) ? 'heart' : 'heart-o'}
-                                    type='font-awesome'
-                                    color={favoritePets.some(favoritePet => favoritePet.name === pet.name) ? 'red' : 'gray'}
-                                    onPress={() => onToggleFavorite(pet)}
-                                    containerStyle={styles.icon}
-                                />
-                            </TouchableOpacity>
-                        ))}
-                </View>
-            </ScrollView>
-            <AppFooter />
+            <View style={{ flex: 1 }}>
+                <AppHeader />
+                <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+                    <Text style={{ fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 5 }}>
+                        Ready to find your next friend?
+                    </Text>
+                    <TextInput
+                        placeholder="Search for pets"
+                        style={{ height: 40, borderColor: 'gray', borderWidth: 1, margin: 20 }}
+                        value={searchTerm}
+                        onChangeText={setSearchTerm} // Update searchTerm when the user types
+                    />
+                    <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
+                        <Icon name='filter' type='font-awesome' color='#000' />
+                    </TouchableOpacity>
+                    <View style={styles.container}>
+                        {getSortedPets()
+                            .filter(pet => filter === "All" || (filter === "Dogs" && pet.type === "dog") || (filter === "Cats" && pet.type === "cat"))
+                            .filter(pet => pet.name.toLowerCase().includes(searchTerm.toLowerCase())) // Filter pets based on searchTerm
+                            .map((pet, index) => (
+                                <TouchableOpacity key={index} style={styles.card} onPress={() => navigation.navigate('PetDetail', {
+                                    name: pet.name,
+                                    image: pet.picture,
+                                    description: pet.description,
+                                    age: pet.age,
+                                    breed: pet.breed,
+                                    size: pet.size,
+                                    gender: pet.gender,
+                                    location: pet.location,
+                                })}>
+                                    <Image source={pet.picture ? { uri: pet.picture } : WelcomeLogo} style={styles.image} />
+                                    <Text style={styles.name}>{pet.name}</Text>
+                                    <Icon
+                                        name={favoritePets.some(favoritePet => favoritePet.name === pet.name) ? 'heart' : 'heart-o'}
+                                        type='font-awesome'
+                                        color={favoritePets.some(favoritePet => favoritePet.name === pet.name) ? 'red' : 'gray'}
+                                        onPress={() => onToggleFavorite(pet)}
+                                        containerStyle={styles.icon}
+                                    />
+                                </TouchableOpacity>
+                            ))}
+                    </View>
+                </ScrollView>
+                <AppFooter />
 
-            <Modal isVisible={isFilterModalVisible} onBackdropPress={toggleFilterModal}>
-                <View style={styles.modal}>
-                    <TouchableOpacity onPress={() => applyFilter("All", null)} style={styles.modalOption}>
-                        <Text>All</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => applyFilter("Dogs", null)} style={styles.modalOption}>
-                        <Text>Dogs</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => applyFilter("Cats", null)} style={styles.modalOption}>
-                        <Text>Cats</Text>
-                    </TouchableOpacity>
-                    <Text style={{ marginVertical: 10 }}>Sort by:</Text>
-                    <TouchableOpacity onPress={() => applyFilter(filter, "Name")} style={styles.modalOption}>
-                        <Text>Name</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => applyFilter(filter, "Age")} style={styles.modalOption}>
-                        <Text>Age</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-        </View>
-    );
-};
+                <Modal isVisible={isFilterModalVisible} onBackdropPress={toggleFilterModal}>
+                    <View style={styles.modal}>
+                        <TouchableOpacity onPress={() => applyFilter("All", null)} style={styles.modalOption}>
+                            <Text>All</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => applyFilter("Dogs", null)} style={styles.modalOption}>
+                            <Text>Dogs</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => applyFilter("Cats", null)} style={styles.modalOption}>
+                            <Text>Cats</Text>
+                        </TouchableOpacity>
+                        <Text style={{ marginVertical: 10 }}>Sort by:</Text>
+                        <TouchableOpacity onPress={() => applyFilter(filter, "Name")} style={styles.modalOption}>
+                            <Text>Name</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => applyFilter(filter, "Age")} style={styles.modalOption}>
+                            <Text>Age</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+            </View>
+        );
+    };
 
 const styles = StyleSheet.create({
     container: {

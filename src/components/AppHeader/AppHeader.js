@@ -18,12 +18,16 @@ const AppHeader = () => {
     };
 
     const onFavoritePressed = () => {
-            navigation.navigate('Favorite');
-        };
+        navigation.navigate('Favorite');
+    };
 
     const onNotificationPressed = () => {
-            navigation.navigate('Notification');
-        };
+        navigation.navigate('Notification');
+    };
+
+    const onMyPetsPressed = () => {
+        navigation.navigate('MyPets');
+    };
 
     return (
             <View>
@@ -31,7 +35,7 @@ const AppHeader = () => {
                     placement="left"
                     leftComponent={<Image source={logo} style={{ width: 145, height: 55, marginBottom: -12 }} />}
                     rightComponent={
-                        <Icon name="search" type="font-awesome" color="#fff" style={{ marginRight: 10 }} />
+                        <Icon name="paw" type="font-awesome" color="#fff" style={{ marginRight: 10 }}onPress={onMyPetsPressed} />
                     }
                     backgroundColor='skyblue'
                     containerStyle={{ marginBottom: -13 }}

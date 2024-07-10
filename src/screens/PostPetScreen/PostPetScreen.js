@@ -88,6 +88,16 @@ const PostPetScreen = () => {
         return;
       }
 
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        console.log('Error fetching session: ', sessionError.message);
+        Alert.alert('Error fetching session', sessionError.message);
+        setLoading(false);
+        return;
+      }
+
+      const user = sessionData.session?.user;
+
       const petData = {
         picture: pictureUrl,
         name: name,
@@ -98,6 +108,7 @@ const PostPetScreen = () => {
         location: location,
         description: description,
         type: type,
+        user_id: user?.id,
       };
 
       const { data: insertData, error: insertError } = await supabase

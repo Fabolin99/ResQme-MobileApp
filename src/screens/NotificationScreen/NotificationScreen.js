@@ -1,16 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, ScrollView, Text, StyleSheet } from "react-native";
 import AppHeader from "../../components/AppHeader";
 import AppFooter from "../../components/AppFooter";
-
-const notifications = [
-    // Sample notifications
-    { id: 1, title: 'New Pet Available', message: 'A new pet has been added to your favorite shelter.' },
-    { id: 2, title: 'Adoption Approved', message: 'Your adoption request has been approved.' },
-    // Add more notifications here
-];
+import supabase from '../../components/supabaseClient';
 
 const NotificationScreen = () => {
+    const [notifications, setNotifications] = useState([
+        // Sample notifications
+        { id: 1, title: 'New Pet Available', message: 'A new pet has been added to your favorite shelter.' },
+        { id: 2, title: 'Adoption Approved', message: 'Your adoption request has been approved.' },
+    ]);
+
+    useEffect(() => {
+        const petSubscription = supabase
+            .channel('public: pets')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pets' }, payload => {
+                setNotifications(prevNotifications => [
+                    ...prevNotifications,
+                    {
+                        id: payload.new.id,
+                        title: 'New Pet Added',
+                        message: `A new pet named ${payload.new.name} has been added.`
+                    }
+                ]);
+            })
+            .subscribe();
+
+        // Cleanup subscription on unmount
+        return () => {
+            supabase.removeChannel(petSubscription);
+        };
+    }, []);
+
     return (
         <View style={{ flex: 1 }}>
             <AppHeader />
