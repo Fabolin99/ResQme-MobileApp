@@ -21,6 +21,7 @@ import MyPetsScreen from "../screens/MyPetsScreen";
 import EditPetScreen from "../screens/EditPetScreen";
 import AdoptionScreen from "../screens/AdoptionScreen";
 import AdoptionInfoScreen from "../screens/AdoptionInfoScreen";
+import AdoptionStatusScreen from "../screens/AdoptionStatusScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -57,6 +58,7 @@ const Navigation = () => {
                 <Stack.Screen name="EditPet" component={EditPetScreen} />
                 <Stack.Screen name="Adoption" component={AdoptionScreen} />
                 <Stack.Screen name="AdoptionInfo" component={AdoptionInfoScreen} />
+                <Stack.Screen name="AdoptionStatus" component={AdoptionStatusScreen} />
                 <Stack.Screen name="Pet">
                     {props => <PetScreen {...props} favoritePets={favoritePets} onToggleFavorite={handleToggleFavorite} />}
                 </Stack.Screen>

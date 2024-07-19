@@ -37,6 +37,10 @@ const SettingScreen = () => {
         navigation.navigate('MyPets');
     };
 
+    const onAdoptionStatusPressed = () => {
+        navigation.navigate('AdoptionStatus');
+    };
+
     const handleDeleteAccount = async () => {
         const user = supabase.auth.user;
 
@@ -70,6 +74,10 @@ const SettingScreen = () => {
 
                 <TouchableOpacity style={styles.settingItem} onPress={onMyPetsPressed}>
                     <Text style={styles.settingText}>My Pets</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.settingItem} onPress={onAdoptionStatusPressed}>
+                    <Text style={styles.settingText}>Adoption Status</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.settingItem} onPress={onSupportPressed}>

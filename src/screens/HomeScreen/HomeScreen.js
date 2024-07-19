@@ -16,43 +16,30 @@ const tips = [
   "Remember, adopting a pet is a long-term commitment. Make sure you're ready for the responsibility before bringing a pet home."
 ];
 
+const curiosities = [
+  "Cats have five toes on their front paws but only four on their back paws.",
+  "Dogs have a sense of smell that is 40 times better than humans.",
+  "Cats can rotate their ears 180 degrees.",
+  "A dog's nose print is unique, much like a human's fingerprint.",
+  "Cats sleep for 70% of their lives.",
+  "Dogs can understand up to 250 words and gestures."
+];
 
 const getRandomTip = () => {
   const index = Math.floor(Math.random() * tips.length);
   return tips[index];
 };
 
-const upcomingHolidays = [
-  {
-    date: '2024-07-04',
-    name: 'Independence Day',
-  },
-  {
-    date: '2024-09-02',
-    name: 'Labor Day',
-  },
-  // Add more events/holidays as needed...
-];
-
-const getClosestHoliday = () => {
-  const today = new Date();
-  const upcomingDates = upcomingHolidays.map((event) => new Date(event.date));
-  const closestDate = new Date(Math.min(...upcomingDates.filter(date => date > today).map(date => date.getTime())));
-
-  const closestEvent = upcomingHolidays.find((event) => {
-    const eventDate = new Date(event.date);
-    return eventDate.getTime() === closestDate.getTime();
-  });
-
-  return closestEvent ? `${closestEvent.name} - ${closestEvent.date}` : '';
+const getRandomCuriosity = () => {
+  const index = Math.floor(Math.random() * curiosities.length);
+  return curiosities[index];
 };
-
 
 const news = [
   {
-    title: 'New Program Launch!',
-    date: '2024-03-21',
-    content: 'We are excited to announce the launch of our new program aimed at empowering young girls in STEM fields.',
+    title: 'New App Launch!',
+    date: '7-19-2024',
+    content: 'We are excited to announce the launch of our new adoption app.',
   },
   // Add more news as needed...
 ];
@@ -68,7 +55,6 @@ const HomeScreen = () => {
     const ourStory = "Meet Benson, the cat that changed my life. Benson was rescued from an animal shelter after being there for many months. Benson saw how many cats were adopted and had a happy life. When I saw Benson the first time, I saw a cat that wanted a second opportunity but life hasn't been fair. That moment is when I adopted her and my life changed.\n\nBenson quickly became a part of my life, turning her world upside down. The once quiet apartment was now filled with tiny meows and the patter of little paws. Seeing Benson's transformation from a scared kitten to a playful, happy cat, I fell in love with the idea of adoption. My hope is to give more animals like Benson a second chance at life.";
     const [isFlipped, setIsFlipped] = useState(false);
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
-
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -94,8 +80,8 @@ const HomeScreen = () => {
           content: getRandomTip(),
         },
         {
-          title: 'Upcoming Holiday:',
-          content: getClosestHoliday(),
+          title: 'Curiosity about Pets:',
+          content: getRandomCuriosity(),
         },
         {
           title: 'Latest News:',
@@ -216,7 +202,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 16,
     },
-     boldText: {
+    boldText: {
         fontWeight: 'bold',
     },
     text: {
@@ -266,23 +252,23 @@ const styles = StyleSheet.create({
         padding: 10,
         marginTop: 30,
         marginBottom: 20,
-      },
-      postPetIntro: {
+    },
+    postPetIntro: {
         fontSize: 16,
         marginBottom: 10,
-      },
-      postPetButton: {
+    },
+    postPetButton: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#c82333',
         padding: 10,
         borderRadius: 5,
-      },
-      postPetButtonText: {
+    },
+    postPetButtonText: {
         color: 'white',
         marginLeft: 10,
-      },
+    },
     storySection: {
         marginTop: 20,
         padding: 10,

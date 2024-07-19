@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AppHeader from "../../components/AppHeader";
 import AppFooter from "../../components/AppFooter";
@@ -16,6 +16,21 @@ const AdoptionScreen = ({ route }) => {
         occupation: '',
         reason: '',
     });
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        const fetchUserId = async () => {
+            const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) {
+                console.log('Error fetching session: ', sessionError.message);
+                return;
+            }
+            const user = sessionData.session?.user;
+            setUserId(user?.id);
+        };
+
+        fetchUserId();
+    }, []);
 
     const handleAdopt = async () => {
         if (Object.values(formData).some(field => field === '')) {
@@ -34,7 +49,8 @@ const AdoptionScreen = ({ route }) => {
                     address: formData.address,
                     occupation: formData.occupation,
                     reason: formData.reason,
-                    status: 'pending'
+                    status: 'pending',
+                    adopter_id: userId
                 }
             ]);
 
