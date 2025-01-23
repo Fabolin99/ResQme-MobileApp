@@ -1,6 +1,6 @@
 # ResQme-App
 
-ResQme-App is a mobile application designed to simplify the pet adoption process. It's currently under active development.
+ResQme-App is a mobile application designed to simplify the pet adoption process.
 
 ## Objective
 
